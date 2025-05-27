@@ -107,45 +107,31 @@
         opacity: 0;
       }
     }
-
-    /* Yazılar yukarıdan aşağıya akacak şekilde güncellendi */
     .crawl {
       position: absolute;
-      top: -50%; /* ekranın üstünün biraz üstünde başlasın */
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80%;
-      max-width: 600px;
+      bottom: 0;
+      width: 100%;
+      height: 100vh;
       color: yellow;
-      font-size: 3vw;
+      font-size: 6vw;
       font-weight: bold;
       text-align: center;
-      animation: crawlDown 30s linear forwards; /* animasyon ismi değişti */
+      animation: crawl 15s linear forwards;
+      transform-origin: bottom center;
       z-index: 10;
       pointer-events: none;
       user-select: none;
     }
-    @keyframes crawlDown {
+    @keyframes crawl {
       0% {
-        top: -50%;
-        opacity: 1;
-      }
-      90% {
+        transform: rotateX(20deg) translateZ(0) translateY(100vh);
         opacity: 1;
       }
       100% {
-        top: 110%;
+        transform: rotateX(25deg) translateZ(-1000px) translateY(-200vh);
         opacity: 0;
       }
     }
-
-    /* Üzgün emoji stili */
-    .crawl span {
-      font-size: 1.5em;
-      margin-left: 5px;
-      vertical-align: middle;
-    }
-
     @media (min-width: 768px) {
       .message {
         font-size: 20px;
@@ -158,13 +144,13 @@
 </head>
 <body>
   <div class="crawl">
-    <p>Sevgili Esma <span>😢</span>,</p>
-    <p>Yine anlam veremediğim bir tartışma içerisindeyiz 💔 <span>😢</span></p>
-    <p>Hatamın ne olduğunu anlamadım ama beni affetmeni dilerim 🙏 <span>😢</span></p>
-    <p>Sen benim için evrendeki en değerli yıldızsın 🌟 <span>😢</span></p>
-    <p>Ve seni sonsuza kadar seveceğim 💛 <span>😢</span></p>
-    <p>Kalbimin her atışı, seninle olmak için 💗 <span>😢</span></p>
-    <p>Nolur beni affet... <span>😢</span></p>
+    <p>Sevgili Esma,</p>
+    <p>Yine anlam veremediğim bir tartışma içerisindeyiz 💔</p>
+    <p>Hatamın ne olduğunu anlamadım ama beni affetmeni dilerim 🙏</p>
+    <p>Sen benim için evrendeki en değerli yıldızsın 🌟</p>
+    <p>Ve seni sonsuza kadar seveceğim 💛</p>
+    <p>Kalbimin her atışı, seninle olmak için 💗</p>
+    <p>Nolur beni affet...</p>
   </div>
 
   <audio id="bgMusic" src="videoplayback.mp3" loop></audio>
@@ -192,18 +178,18 @@
       setTimeout(() => trail.remove(), 1000);
     });
 
-    // Yıldızlar (daha yavaş)
+    // Yıldızlar
     function createStar() {
       const star = document.createElement('div');
       star.classList.add('star');
       star.style.left = `${Math.random() * 100}vw`;
       star.style.top = `-10px`;
-      star.style.animationDuration = `${5 + Math.random() * 5}s`; // 5-10s arası
+      star.style.animationDuration = `${2 + Math.random() * 3}s`;
       star.style.opacity = Math.random();
       document.body.appendChild(star);
-      setTimeout(() => star.remove(), 10000);
+      setTimeout(() => star.remove(), 5000);
     }
-    setInterval(createStar, 150);
+    setInterval(createStar, 100);
 
     // Kısa ve soluk yazılar
     const compliments = [
