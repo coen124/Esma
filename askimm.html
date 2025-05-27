@@ -10,14 +10,8 @@
       overflow: hidden;
       background-color: #000;
       cursor: none;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Arial', sans-serif;
       touch-action: none;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      position: relative;
-      color: yellow;
     }
     .star {
       position: absolute;
@@ -26,12 +20,11 @@
       background: white;
       border-radius: 50%;
       opacity: 0.8;
-      animation: fall 7s linear infinite;
-      top: -10px;
+      animation: fall linear infinite;
     }
     @keyframes fall {
       to {
-        transform: translateY(110vh);
+        transform: translateY(100vh);
         opacity: 0;
       }
     }
@@ -96,7 +89,7 @@
     .matrix-heart {
       position: absolute;
       color: #ff66cc;
-      font-size: 16px;
+      font-size: 3vw;
       font-weight: bold;
       animation: fallMatrix 3s linear forwards;
       z-index: 2;
@@ -115,58 +108,81 @@
       }
     }
 
-    /* Yazıların yukarıdan aşağı hızlıca inip ortada sabit kalması */
+    /* Yazılar yukarıdan aşağıya akacak şekilde güncellendi */
     .crawl {
       position: absolute;
-      top: -80%;
+      top: -50%; /* ekranın üstünün biraz üstünde başlasın */
       left: 50%;
       transform: translateX(-50%);
-      width: 80vw;
+      width: 80%;
       max-width: 600px;
-      font-size: 18px;
+      color: yellow;
+      font-size: 3vw;
       font-weight: bold;
       text-align: center;
-      animation: crawlDown 3s ease forwards;
+      animation: crawlDown 30s linear forwards; /* animasyon ismi değişti */
       z-index: 10;
       pointer-events: none;
       user-select: none;
-      line-height: 1.5;
-      color: yellow;
-    }
-    @media (max-width: 768px) {
-      .crawl {
-        font-size: 3vw;
-      }
     }
     @keyframes crawlDown {
       0% {
-        top: -80%;
+        top: -50%;
+        opacity: 1;
+      }
+      90% {
         opacity: 1;
       }
       100% {
-        top: 50%;
-        opacity: 1;
+        top: 110%;
+        opacity: 0;
+      }
+    }
+
+    /* Üzgün emoji stili */
+    .crawl span {
+      font-size: 1.5em;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+
+    @media (min-width: 768px) {
+      .message {
+        font-size: 20px;
+      }
+      .matrix-heart {
+        font-size: 16px;
       }
     }
   </style>
 </head>
 <body>
   <div class="crawl">
-    <p>Sevgili Esma,</p>
-    <p>Yine anlam veremediğim bir tartışma içerisindeyiz 💔</p>
-    <p>Hatamın ne olduğunu anlamadım ama beni affetmeni dilerim 🙏</p>
-    <p>Sen benim için evrendeki en değerli yıldızsın 🌟</p>
-    <p>Ve seni sonsuza kadar seveceğim 💛</p>
-    <p>Kalbimin her atışı, seninle olmak için 💗</p>
-    <p>Nolur beni affet...</p>
+    <p>Sevgili Esma <span>😢</span>,</p>
+    <p>Yine anlam veremediğim bir tartışma içerisindeyiz 💔 <span>😢</span></p>
+    <p>Hatamın ne olduğunu anlamadım ama beni affetmeni dilerim 🙏 <span>😢</span></p>
+    <p>Sen benim için evrendeki en değerli yıldızsın 🌟 <span>😢</span></p>
+    <p>Ve seni sonsuza kadar seveceğim 💛 <span>😢</span></p>
+    <p>Kalbimin her atışı, seninle olmak için 💗 <span>😢</span></p>
+    <p>Nolur beni affet... <span>😢</span></p>
   </div>
 
-  <audio id="bgMusic" src="videoplayback.mp3" loop autoplay muted playsinline></audio>
+  <audio id="bgMusic" src="videoplayback.mp3" loop></audio>
 
   <script>
     const audio = document.getElementById('bgMusic');
-    audio.volume = 0.2;
+    audio.volume = 0.2; // Ses seviyesi %20
 
+    // Kullanıcı etkileşimiyle müziği başlat
+    function startAudio() {
+      audio.play().catch(() => {});
+      document.removeEventListener('click', startAudio);
+      document.removeEventListener('touchstart', startAudio);
+    }
+    document.addEventListener('click', startAudio);
+    document.addEventListener('touchstart', startAudio);
+
+    // Mouse takip eden kalp izi
     document.addEventListener('mousemove', e => {
       const trail = document.createElement('div');
       trail.classList.add('trail-heart');
@@ -176,18 +192,20 @@
       setTimeout(() => trail.remove(), 1000);
     });
 
+    // Yıldızlar (daha yavaş)
     function createStar() {
       const star = document.createElement('div');
       star.classList.add('star');
       star.style.left = `${Math.random() * 100}vw`;
       star.style.top = `-10px`;
-      star.style.animationDuration = `${7 + Math.random() * 6}s`;
-      star.style.opacity = Math.random() * 0.8 + 0.2;
+      star.style.animationDuration = `${5 + Math.random() * 5}s`; // 5-10s arası
+      star.style.opacity = Math.random();
       document.body.appendChild(star);
-      setTimeout(() => star.remove(), 14000);
+      setTimeout(() => star.remove(), 10000);
     }
-    setInterval(createStar, 200);
+    setInterval(createStar, 150);
 
+    // Kısa ve soluk yazılar
     const compliments = [
       "Seni seviyorum ❤️",
       "Prensesim 👑",
@@ -212,6 +230,7 @@
 
     setInterval(showCompliment, 1500);
 
+    // Matrix tarzı LOVE yazıları
     function createMatrixHeart() {
       const el = document.createElement('div');
       el.className = 'matrix-heart';
