@@ -10,8 +10,14 @@
       overflow: hidden;
       background-color: #000;
       cursor: none;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       touch-action: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: relative;
+      color: yellow;
     }
     .star {
       position: absolute;
@@ -20,11 +26,12 @@
       background: white;
       border-radius: 50%;
       opacity: 0.8;
-      animation: fall linear infinite;
+      animation: fall 7s linear infinite;
+      top: -10px;
     }
     @keyframes fall {
       to {
-        transform: translateY(100vh);
+        transform: translateY(110vh);
         opacity: 0;
       }
     }
@@ -89,7 +96,7 @@
     .matrix-heart {
       position: absolute;
       color: #ff66cc;
-      font-size: 3vw;
+      font-size: 16px;
       font-weight: bold;
       animation: fallMatrix 3s linear forwards;
       z-index: 2;
@@ -107,37 +114,38 @@
         opacity: 0;
       }
     }
+
+    /* Yazıların yukarıdan aşağı hızlıca inip ortada sabit kalması */
     .crawl {
       position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 100vh;
-      color: yellow;
-      font-size: 6vw;
+      top: -80%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80vw;
+      max-width: 600px;
+      font-size: 18px;
       font-weight: bold;
       text-align: center;
-      animation: crawl 15s linear forwards;
-      transform-origin: bottom center;
+      animation: crawlDown 3s ease forwards;
       z-index: 10;
       pointer-events: none;
       user-select: none;
+      line-height: 1.5;
+      color: yellow;
     }
-    @keyframes crawl {
+    @media (max-width: 768px) {
+      .crawl {
+        font-size: 3vw;
+      }
+    }
+    @keyframes crawlDown {
       0% {
-        transform: rotateX(20deg) translateZ(0) translateY(100vh);
+        top: -80%;
         opacity: 1;
       }
       100% {
-        transform: rotateX(25deg) translateZ(-1000px) translateY(-200vh);
-        opacity: 0;
-      }
-    }
-    @media (min-width: 768px) {
-      .message {
-        font-size: 20px;
-      }
-      .matrix-heart {
-        font-size: 16px;
+        top: 50%;
+        opacity: 1;
       }
     }
   </style>
@@ -153,22 +161,12 @@
     <p>Nolur beni affet...</p>
   </div>
 
-  <audio id="bgMusic" src="videoplayback.mp3" loop></audio>
+  <audio id="bgMusic" src="videoplayback.mp3" loop autoplay muted playsinline></audio>
 
   <script>
     const audio = document.getElementById('bgMusic');
-    audio.volume = 0.2; // Ses seviyesi %20
+    audio.volume = 0.2;
 
-    // Kullanıcı etkileşimiyle müziği başlat
-    function startAudio() {
-      audio.play().catch(() => {});
-      document.removeEventListener('click', startAudio);
-      document.removeEventListener('touchstart', startAudio);
-    }
-    document.addEventListener('click', startAudio);
-    document.addEventListener('touchstart', startAudio);
-
-    // Mouse takip eden kalp izi
     document.addEventListener('mousemove', e => {
       const trail = document.createElement('div');
       trail.classList.add('trail-heart');
@@ -178,20 +176,18 @@
       setTimeout(() => trail.remove(), 1000);
     });
 
-    // Yıldızlar
     function createStar() {
       const star = document.createElement('div');
       star.classList.add('star');
       star.style.left = `${Math.random() * 100}vw`;
       star.style.top = `-10px`;
-      star.style.animationDuration = `${2 + Math.random() * 3}s`;
-      star.style.opacity = Math.random();
+      star.style.animationDuration = `${7 + Math.random() * 6}s`;
+      star.style.opacity = Math.random() * 0.8 + 0.2;
       document.body.appendChild(star);
-      setTimeout(() => star.remove(), 5000);
+      setTimeout(() => star.remove(), 14000);
     }
-    setInterval(createStar, 100);
+    setInterval(createStar, 200);
 
-    // Kısa ve soluk yazılar
     const compliments = [
       "Seni seviyorum ❤️",
       "Prensesim 👑",
@@ -216,7 +212,6 @@
 
     setInterval(showCompliment, 1500);
 
-    // Matrix tarzı LOVE yazıları
     function createMatrixHeart() {
       const el = document.createElement('div');
       el.className = 'matrix-heart';
