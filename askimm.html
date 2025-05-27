@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Minik Domusummm</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+      cursor: none;
+      font-family: 'Arial', sans-serif;
+      touch-action: none;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+    .trail-heart {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: pink;
+      transform: rotate(-45deg);
+      opacity: 0.7;
+      animation: fadeOut 1s forwards;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .trail-heart::before,
+    .trail-heart::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: pink;
+      border-radius: 50%;
+    }
+    .trail-heart::before {
+      top: -5px;
+      left: 0;
+    }
+    .trail-heart::after {
+      left: 5px;
+      top: 0;
+    }
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.5);
+      }
+    }
+    .message {
+      position: absolute;
+      color: rgba(255, 105, 180, 0.6);
+      font-size: 4vw;
+      font-weight: bold;
+      white-space: nowrap;
+      z-index: 5;
+      animation: fallMessage 7s linear forwards;
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    @keyframes fallMessage {
+      0% {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      20% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+    .matrix-heart {
+      position: absolute;
+      color: #ff66cc;
+      font-size: 3vw;
+      font-weight: bold;
+      animation: fallMatrix 3s linear forwards;
+      z-index: 2;
+    }
+    @keyframes fallMatrix {
+      0% {
+        transform: translateY(-30px);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+    .crawl {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 100vh;
+      color: yellow;
+      font-size: 6vw;
+      font-weight: bold;
+      text-align: center;
+      animation: crawl 15s linear forwards;
+      transform-origin: bottom center;
+      z-index: 10;
+      pointer-events: none;
+      user-select: none;
+    }
+    @keyframes crawl {
+      0% {
+        transform: rotateX(20deg) translateZ(0) translateY(100vh);
+        opacity: 1;
+      }
+      100% {
+        transform: rotateX(25deg) translateZ(-1000px) translateY(-200vh);
+        opacity: 0;
+      }
+    }
+    @media (min-width: 768px) {
+      .message {
+        font-size: 20px;
+      }
+      .matrix-heart {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="crawl">
+    <p>Sevgili Esma,</p>
+    <p>Yine anlam veremediğim bir tartışma içerisindeyiz 💔</p>
+    <p>Hatamın ne olduğunu anlamadım ama beni affetmeni dilerim 🙏</p>
+    <p>Sen benim için evrendeki en değerli yıldızsın 🌟</p>
+    <p>Ve seni sonsuza kadar seveceğim 💛</p>
+    <p>Kalbimin her atışı, seninle olmak için 💗</p>
+    <p>Nolur beni affet...</p>
+  </div>
+
+  <audio id="bgMusic" src="videoplayback.mp3" loop></audio>
+
+  <script>
+    const audio = document.getElementById('bgMusic');
+    audio.volume = 0.2; // Ses seviyesi %20
+
+    // Kullanıcı etkileşimiyle müziği başlat
+    function startAudio() {
+      audio.play().catch(() => {});
+      document.removeEventListener('click', startAudio);
+      document.removeEventListener('touchstart', startAudio);
+    }
+    document.addEventListener('click', startAudio);
+    document.addEventListener('touchstart', startAudio);
+
+    // Mouse takip eden kalp izi
+    document.addEventListener('mousemove', e => {
+      const trail = document.createElement('div');
+      trail.classList.add('trail-heart');
+      trail.style.left = `${e.clientX}px`;
+      trail.style.top = `${e.clientY}px`;
+      document.body.appendChild(trail);
+      setTimeout(() => trail.remove(), 1000);
+    });
+
+    // Yıldızlar
+    function createStar() {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.left = `${Math.random() * 100}vw`;
+      star.style.top = `-10px`;
+      star.style.animationDuration = `${2 + Math.random() * 3}s`;
+      star.style.opacity = Math.random();
+      document.body.appendChild(star);
+      setTimeout(() => star.remove(), 5000);
+    }
+    setInterval(createStar, 100);
+
+    // Kısa ve soluk yazılar
+    const compliments = [
+      "Seni seviyorum ❤️",
+      "Prensesim 👑",
+      "Canımmmm 💕",
+      "Gözlerimdesin ✨",
+      "Kalbim hep seninle 💖",
+      "Bir tanemsin 💫",
+      "Rüyamsın 🌙",
+      "Aşkım 💘",
+      "Tatlım 😘"
+    ];
+
+    function showCompliment() {
+      const msg = document.createElement('div');
+      msg.className = 'message';
+      msg.innerText = compliments[Math.floor(Math.random() * compliments.length)];
+      msg.style.left = `${Math.random() * (window.innerWidth - 150)}px`;
+      msg.style.top = `-30px`;
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 7000);
+    }
+
+    setInterval(showCompliment, 1500);
+
+    // Matrix tarzı LOVE yazıları
+    function createMatrixHeart() {
+      const el = document.createElement('div');
+      el.className = 'matrix-heart';
+      el.innerText = 'LOVE';
+      el.style.left = `${Math.random() * 100}vw`;
+      el.style.top = `-30px`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+
+    setInterval(() => {
+      const count = Math.floor(Math.random() * 4) + 3;
+      for (let i = 0; i < count; i++) {
+        createMatrixHeart();
+      }
+    }, 400);
+  </script>
+</body>
+</html>
