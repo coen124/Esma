@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizza vs Domuzlar</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: sans-serif;
+      color: white;
+    }
+    canvas {
+      display: block;
+    }
+    #score, #message {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      color: white;
+    }
+    #loveNote {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 14px;
+      color: pink;
+      display: none;
+    }
+    #winMessage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      color: lime;
+      display: none;
+    }
+    #controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      background: white;
+      border: none;
+      font-size: 24px;
+      padding: 10px;
+      border-radius: 10px;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <div id="score">Puan: 0</div>
+  <div id="loveNote">seni seviyorum ❤️</div>
+  <div id="winMessage">Kazandınız! 🎉</div>
+  <div id="controls">
+    <button class="btn" onclick="moveLeft()">⬅️</button>
+    <button class="btn" onclick="moveRight()">➡️</button>
+  </div>
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let score = 0;
+    const scoreDisplay = document.getElementById("score");
+    const loveNote = document.getElementById("loveNote");
+    const winMessage = document.getElementById("winMessage");
+
+    const pig = {
+      x: canvas.width / 2,
+      y: canvas.height - 100,
+      baseSize: 60,
+      size: 60,
+      speed: 60
+    };
+
+    const pizzas = [];
+
+    function spawnPizza() {
+      const isBurger = Math.random() < 0.1;
+      pizzas.push({
+        x: Math.random() * (canvas.width - 50),
+        y: -50,
+        size: 40,
+        speed: isBurger ? 4 : 1 + Math.random() * 1,
+        type: isBurger ? 'burger' : 'pizza'
+      });
+    }
+
+    function drawPig() {
+      ctx.font = `${pig.size}px serif`;
+      ctx.fillText("🐷", pig.x, pig.y);
+    }
+
+    function drawPizzas() {
+      for (let pizza of pizzas) {
+        ctx.font = `${pizza.size}px serif`;
+        ctx.fillStyle = pizza.type === 'burger' ? 'gold' : 'white';
+        ctx.fillText(pizza.type === 'burger' ? "🍔" : "🍕", pizza.x, pizza.y);
+      }
+    }
+
+    function updatePizzas() {
+      for (let i = pizzas.length - 1; i >= 0; i--) {
+        let pizza = pizzas[i];
+        pizza.y += pizza.speed;
+
+        const pigBox = {
+          left: pig.x,
+          right: pig.x + pig.size,
+          top: pig.y - pig.size,
+          bottom: pig.y
+        };
+        const pizzaBox = {
+          left: pizza.x,
+          right: pizza.x + pizza.size,
+          top: pizza.y - pizza.size,
+          bottom: pizza.y
+        };
+
+        if (
+          pizzaBox.right > pigBox.left &&
+          pizzaBox.left < pigBox.right &&
+          pizzaBox.bottom > pigBox.top &&
+          pizzaBox.top < pigBox.bottom
+        ) {
+          pizzas.splice(i, 1);
+          score += pizza.type === 'burger' ? 5 : 1;
+          scoreDisplay.textContent = `Puan: ${score}`;
+
+          pig.size = pig.baseSize * (1 + score);
+
+          if (score % 10 === 0 && score < 100) {
+            loveNote.style.display = "block";
+            setTimeout(() => loveNote.style.display = "none", 2000);
+          }
+
+          if (score >= 100) {
+            winMessage.style.display = "block";
+            cancelAnimationFrame(animationId);
+          }
+        } else if (pizza.y > canvas.height) {
+          pizzas.splice(i, 1);
+        }
+      }
+    }
+
+    function moveLeft() {
+      pig.x -= pig.speed;
+      if (pig.x < -pig.size) pig.x = canvas.width;
+    }
+
+    function moveRight() {
+      pig.x += pig.speed;
+      if (pig.x > canvas.width) pig.x = -pig.size;
+    }
+
+    window.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft" || e.key === "a") moveLeft();
+      if (e.key === "ArrowRight" || e.key === "d") moveRight();
+    });
+
+    let dragging = false;
+
+    canvas.addEventListener("touchstart", e => {
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      if (x > pig.x && x < pig.x + pig.size && y > pig.y - pig.size && y < pig.y) {
+        dragging = true;
+      }
+    });
+
+    canvas.addEventListener("touchmove", e => {
+      if (dragging) {
+        const touch = e.touches[0];
+        pig.x = touch.clientX;
+      }
+    });
+
+    canvas.addEventListener("touchend", () => {
+      dragging = false;
+    });
+
+    let animationId;
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawPig();
+      drawPizzas();
+      updatePizzas();
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    setInterval(() => {
+      if (score < 100) spawnPizza();
+    }, 800);
+
+    gameLoop();
+  </script>
+</body>
+</html>
