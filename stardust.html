@@ -20,9 +20,18 @@
   </style>
 </head>
 <body>
-  <video autoplay loop playsinline>
-    <source src="star.mp4" type="video/mp4">
-    Tarayıcınız video etiketini desteklemiyor.
-  </video>
+ <video id="myVideo" autoplay  loop playsinline >
+  <source src="star.mp4" type="video/mp4">
+</video>
+
+<script>
+  const video = document.getElementById("myVideo");
+
+  // Kullanıcı video alanına tıklarsa sesi aç
+  video.addEventListener("click", () => {
+    video.muted = false;
+    video.play();
+  });
+</script>
 </body>
 </html>
